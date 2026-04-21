@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DomoNow CRM | Control Ejecutivos Comerciales</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ═══════════ SIDEBAR ═══════════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <div class="logo-icon">D</div>
+        <div>
+          <div class="logo-text">Domo<span>Now</span></div>
+          <div class="logo-sub">Sales CRM</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Principal</div>
+      <div class="nav-item active" onclick="showTab('dashboard', this)">
+        <i class="fas fa-chart-pie"></i> Dashboard
+      </div>
+      <div class="nav-item" onclick="showTab('ejecutivos', this)">
+        <i class="fas fa-users"></i> Ejecutivos
+      </div>
+      <div class="nav-item" onclick="showTab('actividad', this)">
+        <i class="fas fa-pen-to-square"></i> Actividad Diaria
+      </div>
+
+      <div class="nav-section-label">Análisis</div>
+      <div class="nav-item" onclick="showTab('tendencias', this)">
+        <i class="fas fa-chart-line"></i> Tendencias
+      </div>
+
+      <div class="nav-section-label">Sistema</div>
+      <div class="nav-item" onclick="showTab('config', this)">
+        <i class="fas fa-gear"></i> Configuración
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="period-label">Período</div>
+      <select class="period-selector" id="globalPeriod" onchange="onPeriodChange()">
+        <option value="today">Hoy</option>
+        <option value="week">Esta semana</option>
+        <option value="month" selected>Este mes</option>
+      </select>
+    </div>
+  </aside>
+
+  <!-- ═══════════ MAIN ═══════════ -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-date" id="todayLabel"></div>
+        <button class="btn btn-ghost btn-sm" onclick="exportCSV()">
+          <i class="fas fa-download"></i> Exportar
+        </button>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- ══ TAB: DASHBOARD ══ -->
+      <div class="tab-panel active" id="tab-dashboard">
+        <div class="kpi-grid" id="kpiGrid"></div>
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="fas fa-bullseye"></i> Cumplimiento vs Meta</div>
+            </div>
+            <div id="teamGoalProgress"></div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="fas fa-trophy"></i> Top Ejecutivos</div>
+            </div>
+            <div id="miniRanking"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fas fa-clock-rotate-left"></i> Actividad Reciente</div>
+            <button class="btn btn-ghost btn-sm" onclick="showTab('actividad', null)">Ver todo →</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Fecha</th><th>Ejecutivo</th><th>Llamadas</th>
+                  <th>Demos Ag.</th><th>Demos Real.</th><th>Cierres</th><th>Conv.</th>
+                </tr>
+              </thead>
+              <tbody id="recentActivityBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ TAB: EJECUTIVOS ══ -->
+      <div class="tab-panel" id="tab-ejecutivos">
+        <div class="section-header">
+          <div class="section-title"><i class="fas fa-users"></i> Ejecutivos Comerciales</div>
+          <button class="btn btn-primary" onclick="openAddExecModal()">
+            <i class="fas fa-plus"></i> Nuevo Ejecutivo
+          </button>
+        </div>
+        <div class="card" style="margin-bottom:24px">
+          <div class="card-header">
+            <div class="card-title"><i class="fas fa-ranking-star"></i> Ranking del Equipo</div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th><th>Ejecutivo</th><th>Llamadas</th><th>Demos Ag.</th>
+                  <th>Demos Real.</th><th>Cierres</th><th>Conversión</th>
+                  <th>Cum. Meta</th><th>Estado</th><th></th>
+                </tr>
+              </thead>
+              <tbody id="rankingTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="section-title" style="margin-bottom:16px">
+          <i class="fas fa-id-card"></i> Detalle Individual
+        </div>
+        <div class="exec-cards" id="execCardsGrid"></div>
+      </div>
+
+      <!-- ══ TAB: ACTIVIDAD DIARIA ══ -->
+      <div class="tab-panel" id="tab-actividad">
+        <div class="section-header">
+          <div class="section-title"><i class="fas fa-pen-to-square"></i> Registro de Actividad</div>
+        </div>
+
+        <!-- Formulario -->
+        <div class="activity-form">
+          <div class="form-section-label">
+            <i class="fas fa-plus-circle"></i> Nueva Entrada
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Ejecutivo *</label>
+              <select class="form-control" id="actExec">
+                <option value="">Seleccionar...</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Fecha *</label>
+              <input type="date" class="form-control" id="actDate" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Llamadas / Contactos</label>
+              <input type="number" class="form-control" id="actLlamadas" min="0" placeholder="0" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Demos Agendadas</label>
+              <input type="number" class="form-control" id="actDemosAg" min="0" placeholder="0" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Demos Realizadas</label>
+              <input type="number" class="form-control" id="actDemosRe" min="0" placeholder="0" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Cierres / Ventas</label>
+              <input type="number" class="form-control" id="actCierres" min="0" placeholder="0" />
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:16px">
+            <label class="form-label">Notas del día</label>
+            <textarea class="form-control" id="actNotas" placeholder="Observaciones, estado del pipeline..."></textarea>
+          </div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-primary" onclick="saveActivity()">
+              <i class="fas fa-floppy-disk"></i> Guardar Actividad
+            </button>
+            <button class="btn btn-ghost" onclick="clearActivityForm()">
+              <i class="fas fa-xmark"></i> Limpiar
+            </button>
+          </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filters-bar">
+          <div class="filter-group">
+            <div class="filter-label">Ejecutivo</div>
+            <select class="form-control" id="filterExec" onchange="renderActivityLog()" style="min-width:160px">
+              <option value="">Todos</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <div class="filter-label">Desde</div>
+            <input type="date" class="form-control" id="filterFrom" onchange="renderActivityLog()" style="width:140px" />
+          </div>
+          <div class="filter-group">
+            <div class="filter-label">Hasta</div>
+            <input type="date" class="form-control" id="filterTo" onchange="renderActivityLog()" style="width:140px" />
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="clearFilters()" style="margin-top:18px">
+            <i class="fas fa-filter-circle-xmark"></i> Limpiar
+          </button>
+        </div>
+
+        <!-- Tabla historial -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="fas fa-list-ul"></i> Historial de Actividad</div>
+            <span id="activityCount" style="font-size:12px;color:var(--text2)"></span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Fecha</th><th>Ejecutivo</th><th>Llamadas</th><th>D. Ag.</th>
+                  <th>D. Real.</th><th>Cierres</th><th>Conv.</th><th>Notas</th><th></th>
+                </tr>
+              </thead>
+              <tbody id="activityLogBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ TAB: TENDENCIAS ══ -->
+      <div class="tab-panel" id="tab-tendencias">
+        <div class="section-header">
+          <div class="section-title"><i class="fas fa-chart-line"></i> Análisis y Tendencias</div>
+          <select class="form-control" id="trendExecFilter" onchange="renderCharts()" style="width:auto;min-width:160px">
+            <option value="">Todo el equipo</option>
+          </select>
+        </div>
+        <div class="grid-2" style="margin-bottom:20px;">
+          <div class="card">
+            <div class="card-header"><div class="card-title"><i class="fas fa-phone"></i> Llamadas por Día</div></div>
+            <div class="chart-wrap"><canvas id="chartLlamadas"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title"><i class="fas fa-handshake"></i> Demos & Cierres</div></div>
+            <div class="chart-wrap"><canvas id="chartDemos"></canvas></div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><div class="card-title"><i class="fas fa-percent"></i> Conversión por Ejecutivo</div></div>
+            <div class="chart-wrap"><canvas id="chartConversion"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title"><i class="fas fa-chart-bar"></i> Cierres por Ejecutivo</div></div>
+            <div class="chart-wrap"><canvas id="chartCierres"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ TAB: CONFIGURACIÓN ══ -->
+      <div class="tab-panel" id="tab-config">
+        <div class="section-header">
+          <div class="section-title"><i class="fas fa-gear"></i> Configuración del CRM</div>
+        </div>
+        <div class="config-grid">
+          <div class="config-card">
+            <div class="config-card-title"><i class="fas fa-sun"></i> Metas Diarias (por ejecutivo)</div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label class="form-label">Llamadas / día</label>
+              <input type="number" class="form-control" id="cfgLlamadasD" min="0" />
+            </div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label class="form-label">Demos agendadas / día</label>
+              <input type="number" class="form-control" id="cfgDemosAgD" min="0" />
+            </div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label class="form-label">Demos realizadas / día</label>
+              <input type="number" class="form-control" id="cfgDemosReD" min="0" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Cierres / día</label>
+              <input type="number" class="form-control" id="cfgCierresD" min="0" />
+            </div>
+          </div>
+          <div class="config-card">
+            <div class="config-card-title"><i class="fas fa-calendar"></i> Metas Mensuales (por ejecutivo)</div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label class="form-label">Llamadas / mes</label>
+              <input type="number" class="form-control" id="cfgLlamadasM" min="0" />
+            </div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label class="form-label">Demos agendadas / mes</label>
+              <input type="number" class="form-control" id="cfgDemosAgM" min="0" />
+            </div>
+            <div class="form-group" style="margin-bottom:12px">
+              <label class="form-label">Demos realizadas / mes</label>
+              <input type="number" class="form-control" id="cfgDemosReM" min="0" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Cierres / mes</label>
+              <input type="number" class="form-control" id="cfgCierresM" min="0" />
+            </div>
+          </div>
+          <div class="config-card">
+            <div class="config-card-title"><i class="fas fa-database"></i> Datos & Backup</div>
+            <p style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:16px;">
+              Exporta tus datos o importa un backup anterior.
+              Los datos se sincronizan con <strong style="color:var(--text1)">Supabase</strong> en tiempo real.
+            </p>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <button class="btn btn-ghost btn-sm" onclick="exportCSV()">
+                <i class="fas fa-file-csv"></i> Exportar CSV
+              </button>
+              <button class="btn btn-ghost btn-sm" onclick="exportJSON()">
+                <i class="fas fa-file-code"></i> Exportar JSON (backup)
+              </button>
+              <button class="btn btn-ghost btn-sm" onclick="document.getElementById('importFile').click()">
+                <i class="fas fa-file-import"></i> Importar JSON
+              </button>
+              <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)" />
+              <hr style="border:none;border-top:1px solid var(--border);margin:4px 0;" />
+              <button class="btn btn-danger btn-sm" onclick="confirmReset()">
+                <i class="fas fa-trash"></i> Resetear todos los datos
+              </button>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="saveConfig()">
+          <i class="fas fa-floppy-disk"></i> Guardar Configuración
+        </button>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ══ MODALES ══ -->
+
+<!-- Modal: Agregar ejecutivo -->
+<div class="modal-overlay" id="modalAddExec">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">Nuevo Ejecutivo</div>
+      <button class="modal-close" onclick="closeModal('modalAddExec')"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="form-group" style="margin-bottom:14px">
+      <label class="form-label">Nombre completo *</label>
+      <input type="text" class="form-control" id="newExecName" placeholder="Ej: María García" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Cargo / Rol</label>
+      <input type="text" class="form-control" id="newExecRole" placeholder="Ej: Ejecutivo Comercial Senior" />
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalAddExec')">Cancelar</button>
+      <button class="btn btn-primary" onclick="addExecutive()"><i class="fas fa-plus"></i> Agregar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Confirmar reset -->
+<div class="modal-overlay" id="modalReset">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" style="color:var(--red)"><i class="fas fa-triangle-exclamation"></i> Confirmar Reseteo</div>
+      <button class="modal-close" onclick="closeModal('modalReset')"><i class="fas fa-xmark"></i></button>
+    </div>
+    <p style="font-size:14px;color:var(--text2);margin-bottom:8px;">¿Estás seguro que deseas eliminar <strong style="color:var(--text1)">todos los datos</strong>?</p>
+    <p style="font-size:13px;color:var(--text2);">Esta acción no se puede deshacer.</p>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalReset')">Cancelar</button>
+      <button class="btn btn-danger" onclick="resetAll()"><i class="fas fa-trash"></i> Sí, borrar todo</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Editar actividad -->
+<div class="modal-overlay" id="modalEditActivity">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">Editar Actividad</div>
+      <button class="modal-close" onclick="closeModal('modalEditActivity')"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="form-grid" style="margin-bottom:14px;">
+      <div class="form-group">
+        <label class="form-label">Llamadas</label>
+        <input type="number" class="form-control" id="editLlamadas" min="0" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Demos Ag.</label>
+        <input type="number" class="form-control" id="editDemosAg" min="0" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Demos Re.</label>
+        <input type="number" class="form-control" id="editDemosRe" min="0" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Cierres</label>
+        <input type="number" class="form-control" id="editCierres" min="0" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notas</label>
+      <textarea class="form-control" id="editNotas"></textarea>
+    </div>
+    <input type="hidden" id="editActivityId" />
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modalEditActivity')">Cancelar</button>
+      <button class="btn btn-primary" onclick="updateActivity()"><i class="fas fa-floppy-disk"></i> Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Notificaciones -->
+<div class="notif-container" id="notifContainer"></div>
+
+<!-- ══ SCRIPTS ══ -->
+<!-- 1. SDK Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- 2. Chart.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<!-- 3. Configuración (credenciales Supabase) -->
+<script src="assets/js/config.js"></script>
+<!-- 4. Base de datos (todas las llamadas a Supabase) -->
+<script src="assets/js/db.js"></script>
+<!-- 5. Interfaz (todo lo que pinta en pantalla) -->
+<script src="assets/js/ui.js"></script>
+<!-- 6. Lógica principal -->
+<script src="assets/js/app.js"></script>
+
+</body>
+</html>
