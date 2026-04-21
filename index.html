@@ -130,9 +130,16 @@
             <table>
               <thead>
                 <tr>
-                  <th>#</th><th>Ejecutivo</th><th>Llamadas</th><th>Demos Ag.</th>
-                  <th>Demos Real.</th><th>Cierres</th><th>Conversión</th>
-                  <th>Cum. Meta</th><th>Estado</th><th></th>
+                  <th>#</th>
+                  <th>Ejecutivo</th>
+                  <th class="hide-mobile">Llamadas</th>
+                  <th class="hide-tablet">Demos Ag.</th>
+                  <th class="hide-tablet">Demos Real.</th>
+                  <th>Cierres</th>
+                  <th class="hide-mobile">Conversión</th>
+                  <th class="hide-tablet">Cum. Meta</th>
+                  <th class="hide-mobile">Estado</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody id="rankingTableBody"></tbody>
@@ -422,6 +429,9 @@
     </div>
   </div>
 </div>
+
+<!-- Backdrop para cerrar sidebar en móvil -->
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
 
 <!-- Notificaciones -->
 <div class="notif-container" id="notifContainer"></div>

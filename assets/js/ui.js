@@ -108,6 +108,7 @@ function showTab(name, navEl) {
 
   document.getElementById('topbarTitle').textContent = TAB_TITLES[name] || name;
   document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarBackdrop')?.classList.remove('show');
 
   // Cada tab tiene su render en app.js
   if (name === 'dashboard')   renderDashboard();
@@ -118,7 +119,10 @@ function showTab(name, navEl) {
 }
 
 function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
+  const sidebar  = document.getElementById('sidebar');
+  const backdrop = document.getElementById('sidebarBackdrop');
+  sidebar.classList.toggle('open');
+  backdrop?.classList.toggle('show', sidebar.classList.contains('open'));
 }
 
 function onPeriodChange() {

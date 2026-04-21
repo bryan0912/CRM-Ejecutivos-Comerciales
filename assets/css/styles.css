@@ -741,19 +741,196 @@ textarea.form-control { resize: vertical; min-height: 72px; }
   cursor: pointer; padding: 4px;
 }
 
-/* ── RESPONSIVE ── */
-@media (max-width: 900px) {
-  .sidebar { transform: translateX(-100%); }
-  .sidebar.open { transform: translateX(0); }
-  .main { margin-left: 0; }
-  .menu-toggle { display: block; }
-  .grid-2 { grid-template-columns: 1fr; }
-  .grid-3 { grid-template-columns: 1fr; }
-  .content { padding: 20px 16px; }
+/* ═══════════════════════════════════════
+   RESPONSIVE
+   · 1280px  Pantallas medianas / laptops
+   · 900px   Tablets landscape
+   · 768px   Tablets portrait
+   · 500px   Móviles grandes
+   · 380px   Móviles pequeños
+═══════════════════════════════════════ */
+
+/* ── 1280px — laptop pequeño ── */
+@media (max-width: 1280px) {
+  .sidebar { width: 200px; }
+  .main    { margin-left: 200px; }
+  .content { padding: 24px 24px; }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .grid-3   { grid-template-columns: 1fr 1fr; }
 }
 
+/* ── 900px — tablet landscape / sidebar oculto ── */
+@media (max-width: 900px) {
+  /* Sidebar se convierte en drawer */
+  .sidebar {
+    transform: translateX(-100%);
+    width: 240px;
+    box-shadow: none;
+    z-index: 100;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(130,10,209,0.12);
+  }
+
+  /* Overlay oscuro al abrir sidebar en móvil */
+  .sidebar-backdrop {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.3);
+    z-index: 99;
+  }
+  .sidebar-backdrop.show { display: block; }
+
+  .main        { margin-left: 0; }
+  .menu-toggle { display: block; }
+
+  /* Grids pasan a 1 columna */
+  .grid-2 { grid-template-columns: 1fr; }
+  .grid-3 { grid-template-columns: 1fr; }
+
+  .content { padding: 20px 16px; }
+
+  /* KPIs 2 columnas en tablet */
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+  /* Exec cards 2 columnas */
+  .exec-cards { grid-template-columns: repeat(2, 1fr); }
+
+  /* Config grid 2 columnas */
+  .config-grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* Topbar más compacto */
+  .topbar { padding: 14px 20px; }
+  .topbar-title { font-size: 16px; }
+  .topbar-date  { display: none; }
+
+  /* Tablas con scroll horizontal */
+  .table-wrap { -webkit-overflow-scrolling: touch; }
+
+  /* Formulario actividad */
+  .form-grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* Filtros en columna */
+  .filters-bar { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .filters-bar .filter-group { width: 100%; }
+  .filters-bar .form-control { width: 100%; }
+}
+
+/* ── 768px — tablet portrait ── */
+@media (max-width: 768px) {
+  /* KPIs siguen en 2 columnas */
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .kpi-value { font-size: 28px; }
+
+  /* Exec cards 1 columna */
+  .exec-cards { grid-template-columns: 1fr; }
+
+  /* Config 1 columna */
+  .config-grid { grid-template-columns: 1fr; }
+
+  /* Ranking table — ocultar columnas menos importantes */
+  .hide-tablet { display: none; }
+
+  /* Section header en columna */
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* Modal más grande en tablet */
+  .modal-box { padding: 22px; }
+
+  /* Botones de acción en tabla más pequeños */
+  .btn-sm { padding: 5px 9px; font-size: 11px; }
+
+  /* Chart altura reducida */
+  .chart-wrap { height: 220px; }
+}
+
+/* ── 500px — móvil grande ── */
 @media (max-width: 500px) {
-  .kpi-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-  .form-grid { grid-template-columns: 1fr 1fr; }
-  .topbar { padding: 14px 16px; }
+  /* KPIs 1 columna en móvil pequeño */
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .kpi-card    { padding: 16px; }
+  .kpi-value   { font-size: 24px; }
+  .kpi-icon    { width: 32px; height: 32px; font-size: 14px; }
+
+  /* Topbar */
+  .topbar { padding: 12px 14px; }
+  .topbar-title { font-size: 15px; }
+
+  /* Content */
+  .content { padding: 16px 12px; }
+
+  /* Cards */
+  .card { padding: 16px; }
+  .card-title { font-size: 14px; }
+
+  /* Activity form */
+  .activity-form { padding: 16px; }
+  .form-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+
+  /* Formulario numérico más compacto */
+  .form-control { padding: 8px 10px; font-size: 13px; }
+  .form-label   { font-size: 10px; }
+
+  /* Tabla — solo columnas clave */
+  .hide-mobile { display: none; }
+
+  /* Exec cards */
+  .exec-card { padding: 14px; }
+  .exec-stats-row { gap: 6px; }
+  .exec-stat-val  { font-size: 18px; }
+
+  /* Modal ocupa toda la pantalla */
+  .modal-box {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 16px 16px 0 0;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    max-height: 92vh;
+    margin: 0;
+  }
+
+  .modal-overlay { align-items: flex-end; }
+
+  /* Botones a pantalla completa en modal */
+  .modal-footer { flex-direction: column; }
+  .modal-footer .btn { width: 100%; justify-content: center; }
+
+  /* Logo reducido */
+  .logo-text { font-size: 15px; }
+  .logo-icon { width: 30px; height: 30px; font-size: 14px; }
+
+  /* Rank table compacta */
+  th, td { padding: 10px 8px; font-size: 12px; }
+
+  /* Charts */
+  .chart-wrap { height: 200px; }
+
+  /* Notificaciones */
+  .notif-container { bottom: 12px; right: 12px; left: 12px; }
+  .notif { min-width: unset; width: 100%; }
+
+  /* Sidebar más ancho en móvil para facilitar toque */
+  .sidebar { width: 85%; max-width: 280px; }
+}
+
+/* ── 380px — móvil pequeño ── */
+@media (max-width: 380px) {
+  .kpi-grid   { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .kpi-value  { font-size: 20px; }
+  .kpi-card   { padding: 12px; }
+  .content    { padding: 12px 10px; }
+  .topbar     { padding: 10px 12px; }
+  .form-grid  { grid-template-columns: 1fr; }
+  .exec-stats-row { grid-template-columns: repeat(3, 1fr); }
+  .card       { padding: 12px; }
 }
